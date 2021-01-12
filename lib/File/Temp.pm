@@ -150,7 +150,6 @@ use File::Path 2.06 qw/ rmtree /;
 use Fcntl 1.03;
 use IO::Seekable;               # For SEEK_*
 use Errno;
-use Scalar::Util 'refaddr';
 require VMS::Stdio if $^O eq 'VMS';
 
 # pre-emptively load Carp::Heavy. If we don't when we run out of file
@@ -1182,6 +1181,32 @@ sub STRINGIFY {
 # even for unary operations like '0+'.
 sub NUMIFY {
   return refaddr($_[0]);
+}
+
+# from https://github.com/makamaka/JSON-PP/blob/70dc2b90c257d8b72c115ef891d24c2a2cd02578/lib/JSON/PP.pm#L1435-L1489
+BEGIN {
+  eval 'require Scalar::Util';
+  unless($@){
+    *File::Temp::refaddr = \&Scalar::Util::refaddr;
+  } else {
+    *File::Temp::refaddr = sub {
+      return undef unless length(ref($_[0]));
+
+      my $addr;
+      if(defined(my $pkg = blessed($_[0]))) {
+        $addr .= bless $_[0], 'Scalar::Util::Fake';
+        bless $_[0], $pkg;
+      }
+      else {
+        $addr .= $_[0]
+      }
+
+      $addr =~ /0x(\w+)/;
+      local $^W;
+      #no warnings 'portable';
+      hex($1);
+    }
+  }
 }
 
 =item B<dirname>
