@@ -40,7 +40,7 @@ jobs:
       - name: install Test::Harness
         run: |
           curl -LO https://cpan.metacpan.org/authors/id/L/LE/LEONT/Test-Harness-3.42.tar.gz
-          tar xzvf Test-Harness-3.42
+          tar xzvf Test-Harness-3.42.tar.gz
           cd Test-Harness-3.42
           perl Makefile.PL
           make
