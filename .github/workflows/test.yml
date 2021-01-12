@@ -8,10 +8,11 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os:
           - "ubuntu-latest"
-          - "macos-latest"
+          # - "macos-latest"
           - "windows-latest"
         perl:
           - "5.32"
@@ -36,5 +37,20 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
       - run: perl -V
-      - run: cpanm --installdeps .
+      - name: install Exporter
+        run: |
+          curl -LO https://cpan.metacpan.org/authors/id/T/TO/TODDR/Exporter-5.74.tar.gz
+          tar xzvf Exporter-5.74.tar.gz
+          cd Exporter-5.74
+          perl Makefile.PL
+          make
+          make install
+      - name: install File::Path
+        run: |
+          curl -LO http://www.cpan.org/authors/id/J/JK/JKEENAN/File-Path-2.18.tar.gz
+          tar xzvf File-Path-2.18.tar.gz
+          cd File-Path-2.18
+          perl Makefile.PL
+          make
+          make install
       - run: prove -lv t
