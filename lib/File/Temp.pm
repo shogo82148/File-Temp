@@ -959,7 +959,11 @@ sub _can_do_level {
     # make sure we save the absolute path for later cleanup
     # OK to untaint because we only ever use this internally
     # as a file path, never interpolating into the shell
-    $fname = Cwd::abs_path($fname);
+
+    # use File::Spec->rel2abs instead of Cwd::abs_path.
+    # because very old Cwd::abs_path doesn't work with normal files.
+    use File::Spec;
+    $fname = File::Spec->rel2abs($fname);
     ($fname) = $fname =~ /^(.*)$/;
 
     # If we have a directory, check that it is a directory
