@@ -37,6 +37,14 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
       - run: perl -V
+      - name: install Test::Harness
+        run: |
+          curl -LO https://cpan.metacpan.org/authors/id/L/LE/LEONT/Test-Harness-3.42.tar.gz
+          tar xzvf Test-Harness-3.42
+          cd Test-Harness-3.42
+          perl Makefile.PL
+          make
+          make install
       - name: install Exporter
         run: |
           curl -LO https://cpan.metacpan.org/authors/id/T/TO/TODDR/Exporter-5.74.tar.gz
